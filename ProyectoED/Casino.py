@@ -255,6 +255,7 @@ def FullGameBlackjack():
                         if(roundEnd==1):
                             chips +=10
                             print("INCREASING BET")
+                            Player1.chips = chips
                             
                     if BET_BUTTON.checkForInput(MENU_MOUSE_POS)[1]:
                         playClick()
@@ -262,6 +263,8 @@ def FullGameBlackjack():
                             print("DECREASING BET")
                             if(chips>10):
                                 chips-=10
+                                Player1.chips = chips
+                                
                     if PLAYAGAIN_BUTTON.checkForInput(MENU_MOUSE_POS):
                         playClick()
                         GameBlackjack(Player1.name,0)
