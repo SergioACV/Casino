@@ -138,14 +138,14 @@ def FullGameBlackjack():
             if not makeBet:
                 print("Making the bets")
                 player = MakingBets()
-                GameBlackjack(player[0],player[1])
+                GameBlackjack(player[0],player[1], True)
             
                 makeBet= True
 
             pygame.display.update()
 
     #Dibuja la pantalla del blackjack
-    def GameBlackjack(name, bet):
+    def GameBlackjack(name, bet, FirstTime):
         
         window.fill((0,0,0))
         print("playing blackjack")
@@ -161,8 +161,14 @@ def FullGameBlackjack():
         Busted = False
         chips = int(Player1.chips)
         
-        funds = 100000
-        totalMoney = funds-chips
+        if (FirstTime == True):
+            funds = 200
+            totalMoney = funds-chips
+        else:
+            funds = bet
+            chips = 0
+            totalMoney =funds-chips
+            
 
         # This is a counter that counts the number of rounds played in a given session
         handsPlayed = 0
@@ -240,7 +246,8 @@ def FullGameBlackjack():
                         if(roundEnd!=1):
                             roundEnd,croupierCards = STAND_BUTTON.MakeActions(window, game=game,roundEnd= roundEnd)
                             game.determine_winner()
-                            results(game,funds)
+                            funds = results(game,funds)
+                            chips = 0
                             finish = True
                     if DEAL_BUTTON.checkForInput(MENU_MOUSE_POS):
                         playClick()
@@ -267,7 +274,8 @@ def FullGameBlackjack():
                                 
                     if PLAYAGAIN_BUTTON.checkForInput(MENU_MOUSE_POS):
                         playClick()
-                        GameBlackjack(Player1.name,0)
+                        print(funds)
+                        GameBlackjack(Player1.name,funds,False)
                     if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                         playClick()
                         main_menu()
@@ -288,7 +296,7 @@ def FullGameBlackjack():
                         roundEnd,croupierCards = STAND_BUTTON.MakeActions(window, game=game,roundEnd= roundEnd)
                     roundEnd=1
                     game.determine_winner()
-                    results(game,funds)
+                    funds = results(game,funds)
                     finish = True
                     
                     
@@ -316,13 +324,19 @@ def FullGameBlackjack():
             
             funds = funds + won
             won  = str(won)
+            player.chips = 0
         elif(win==False):
             RESULTS_TEXT = get_font(20).render(f"{player.name} loses with a hand value of {player_value}!", True, "#b68f40")
             won = "0"
             funds = funds - int(player.chips)
+            if(funds<0):
+                funds = 0
+            player.chips = 0
         elif(win==2):
             RESULTS_TEXT = get_font(20).render(f"{player.name}: It's a tie!", True, "#b68f40")
+            
             won = "0"
+            
         RESULTS_RECT = RESULTS_TEXT.get_rect(center=(530, 430))
         WON_TEXT = get_font(20).render("You won:"+won, True, "#b68f40")
         WON_RECT = WON_TEXT.get_rect(center=(530, 470))   
