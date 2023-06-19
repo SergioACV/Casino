@@ -1,12 +1,13 @@
 import pygame
 import pygame_gui
 import sys
-from Button import Button, hitButton, dealButton,standButton, betButton
+from Button import Button, hitButton, dealButton,standButton, betButton, RouletteButtonBets,SelectChipButton
 import random
 from Card import Card
-from Player import Player, PlayerBlackjack
+from Player import Player, PlayerBlackjack,PlayerRoulette
 from Deck import Deck
 from Blackjack import Blackjack
+from Roulette import Roulette
 import os
 
 # Inicializar Pygame
@@ -39,6 +40,7 @@ manager = pygame_gui.UIManager((1280, 720))
 WHITE = (255, 255, 255)
 GREEN = (0, 128, 0)
 RED = (255, 0, 0)
+BLACK =(0,0,0)
 
 
 def get_font(size): # Returns Press-Start-2P in the desired size
@@ -100,6 +102,7 @@ def main_menu():
                 if ROULLETTE_BUTTON.checkForInput(MENU_MOUSE_POS):
                     playClick()
                     print("enterir roullette")
+                    FullRoulette()
     
         for button in [BLACKJACK_BUTTON, POKER_BUTTON, ROULLETTE_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
@@ -109,6 +112,376 @@ def main_menu():
         pygame.display.update()
         # Controlar la velocidad de fotogramas
         clock.tick(60)
+    
+def FullRoulette():
+    
+    def PlayRoulette(Player):
+        BG = pygame.image.load("Graphics/rouletteBG.jpg").convert_alpha()
+        RouletteButtons = RouletteButtonBets()
+        Player1 = Player
+        Player1.chips = 0
+        ruleta = Roulette()
+        
+        #Variableas a usar
+        pressed = (False,False,False,False)
+        Apuestas = {}
+        spin = False
+        
+        
+        #Buttons
+        PLAYAGAIN_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 150), 
+                            text_input="PLAY AGAIN", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+        QUIT_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 200), 
+                            text_input="QUIT", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+        
+        SPIN_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 500), 
+                            text_input="SPIN", font=get_font(20), base_color="#d7fcd4", hovering_color="White")
+        
+        CHIPS_BUTTON =  SelectChipButton(image1=pygame.image.load("Graphics/TinyBt10.jpg"), pos=(1150, 300), 
+                                           image2=pygame.image.load("Graphics/TinyBt25.jpg"), pos2=(1150, 350),
+                                           image3=pygame.image.load("Graphics/TinyBt50.jpg"), pos3=(1150, 400),
+                                           image4=pygame.image.load("Graphics/TinyBt100.jpg"), pos4=(1150, 450),
+                                           image1_1=pygame.image.load("Graphics/TinyBt10Grey.jpg"),
+                                           image2_2=pygame.image.load("Graphics/TinyBt25Grey.jpg"),
+                                           image3_3=pygame.image.load("Graphics/TinyBt50Grey.jpg"),
+                                           image4_4=pygame.image.load("Graphics/TinyBt100Grey.jpg"))
+        
+        BUY_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 684), 
+                                text_input="BUY MORE CHIPS", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+        
+        #Sprite Groups
+        
+        DrawChips = pygame.sprite.Group()
+
+        while True:
+            MENU_MOUSE_POS = pygame.mouse.get_pos()
+            
+            window.fill((0,0,0))
+            window.blit(BG, (0, 0))
+            
+            #Variables a usar
+            Apuestas = RouletteButtons.stacks
+
+            
+            #Text
+            fundsFont = pygame.font.Font.render(get_font(11), "Funds: $%.2f" %(Player1.funds), 1, (255,255,255), (0,0,0))
+            window.blit(fundsFont, (1083,235))
+            
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    print(MENU_MOUSE_POS)
+                    if RouletteButtons.checkForInput(MENU_MOUSE_POS):
+                        playClick()
+                        if(spin == False):
+                            Player1 = RouletteButtons.MakeActions(Player1,pressed,MENU_MOUSE_POS) 
+                            
+                            for clave, elementos in Apuestas.items():
+                                
+                                for elemento in elementos:
+                                    DrawChips.add(elemento)
+                                    
+                            if pressed == (False,False,False,False) and len(Apuestas)!=0:
+                                Player1,card =RouletteButtons.DeleteChipsInStack(Player1)
+                                
+                                if card != None:
+                                    DrawChips.remove(card)
+                            
+
+                    if CHIPS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        pressed = CHIPS_BUTTON.pressed
+                        playClick()
+                        
+                    
+                    if SPIN_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        playClick()
+                        if(spin == False):
+                            spin = True
+                            number = ruleta.spin_wheel()
+                            won = ruleta.resultsRoulette(Player1,Apuestas,number)
+                            Player1.funds +=won
+                        
+                        
+                        
+                    if PLAYAGAIN_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        playClick()
+                        print("PLAYING AGAIN: ROULETTE")
+                        PlayRoulette(Player1)
+                        
+                    if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        playClick()
+                        main_menu()
+                        
+                    if BUY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        playClick()
+                        BuyYourChips(Player1)
+                   
+            
+            for button in [PLAYAGAIN_BUTTON,QUIT_BUTTON,CHIPS_BUTTON,SPIN_BUTTON,BUY_BUTTON]:
+                
+                button.changeColor(MENU_MOUSE_POS)
+                button.update(window)
+            
+            
+            if(spin):
+                COLOR = ruleta.wheel[number]
+                if COLOR == "red":
+                    COLOR = RED
+                elif COLOR == "black":
+                    COLOR = BLACK
+                else:
+                    COLOR = GREEN
+                
+                NUMBERWINNER= pygame.font.Font.render(get_font(40), str(number), 1, (255,255,255), COLOR)
+                WON_TEXT = get_font(15).render(f"{Player1.name} wins {won}. Congratulations!", True, "#b68f40")
+            
+                window.blit(NUMBERWINNER,(515,106))
+                window.blit(WON_TEXT,(300,231))
+                
+            #info about your chips
+            
+            if(len(Player1.Casinochips)!=0):
+                y= 0
+                for amount1 in Player1.Casinochips.values():
+                    
+                    fundsFont = pygame.font.Font.render(get_font(9), amount1.display2(), 1, (255,255,255), (0,0,0))
+                    window.blit(fundsFont, (1070,550+y))
+                    y+=30
+                
+            #Draw sprite groups
+            if(len(Apuestas)!=0):
+                DrawChips.update()
+                DrawChips.draw(window)
+
+            pygame.display.update()
+            # Controlar la velocidad de fotogramas
+            clock.tick(60)
+    
+    
+    
+    def BuyYourChips(Player):
+        
+        def BuyChips(Player,denomination,amount):
+            if amount>0:
+                total = amount*denomination
+                if(total<= Player.funds):
+                    
+                    print("Compra realizada")
+                    Player.add_chips(denomination,amount)
+                    Player.funds = Player.funds - total
+                    print("Total Fund",Player.funds)
+                    playClick()
+                else:
+                    print("Saldo insuficiente")
+            else:
+                print("Devolviendo saldo")
+                total = amount*denomination*-1
+                Player.remove_chips(denomination,amount*-1)
+                Player.funds = Player.funds + total
+                
+            return Player
+                
+            
+        manager = pygame_gui.UIManager((1280, 720))
+        Quantity10 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((240, 146), (100, 50))
+                                                            , manager=manager,object_id='#get_quantity10')
+        Quantity25 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((240, 346), (100, 50))
+                                                            , manager=manager,object_id='#get_quantity25')
+        Quantity50 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((240, 546), (100, 50))
+                                                            , manager=manager,object_id='#get_quantity50')
+        Quantity100 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((770, 146), (100, 50))
+                                                            , manager=manager,object_id='#get_quantity100')
+        
+        Player1 = Player
+        
+        BG = pygame.image.load("Graphics/ShopBG.jpg")
+        is_running = True
+        while is_running:
+            MENU_MOUSE_POS = pygame.mouse.get_pos()
+            UI_REFRESH_RATE = clock.tick(60)/1000
+            window.fill((0,0,0))
+            window.blit(BG, (0, 0))
+            
+            #TEXTOS EN PANTALLA
+            TITTLE_TEXT = get_font(20).render("Buy your chips ¡you will be millonaire!", True, "White")
+            TITTLE_RECT = TITTLE_TEXT.get_rect(center=(420, 38))
+            fundsFont = pygame.font.Font.render(get_font(11), "Funds: $%.2f" %(Player.funds), 1, (255,255,255), (0,0,0))
+            
+            
+            #CARGAR IMAGENES
+            
+            Chip10 = pygame.image.load("Graphics/BIG10.png").convert_alpha()
+            Chip25 = pygame.image.load("Graphics/BIG25.png").convert_alpha()
+            Chip50 = pygame.image.load("Graphics/BIG50.png").convert_alpha()
+            Chip100 = pygame.image.load("Graphics/BIG100.png").convert_alpha()
+            
+            #DISPLAY
+            window.blit(TITTLE_TEXT,TITTLE_RECT)
+            window.blit(Chip10,(76,106))
+            window.blit(Chip25,(76,306))
+            window.blit(Chip50,(76,506))
+            window.blit(Chip100,(606,106))
+            window.blit(fundsFont, (1074,205))
+            
+            #BOTON
+            BACK_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 654), 
+                                text_input="BACK", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+            
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    print(MENU_MOUSE_POS)
+                if (event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and
+                    event.ui_object_id == '#get_quantity10'):
+                    quantity = int(event.text)
+                    Player1 = BuyChips(Player,10,quantity)
+                if (event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and
+                    event.ui_object_id == '#get_quantity25'):
+                    quantity = int(event.text)
+                    Player1 = BuyChips(Player,25,quantity)
+                    
+                if (event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and
+                    event.ui_object_id == '#get_quantity50'):
+                    quantity = int(event.text)
+                    Player1 = BuyChips(Player,50,quantity)
+                    
+                if (event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and
+                    event.ui_object_id == '#get_quantity100'):
+                    quantity = int(event.text)
+                    Player1 = BuyChips(Player,100,quantity)
+                    
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if BACK_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        is_running = False
+                
+                manager.process_events(event)
+            
+            manager.update(UI_REFRESH_RATE)
+            manager.draw_ui(window)
+            
+            for button in [BACK_BUTTON]:
+                button.changeColor(MENU_MOUSE_POS)
+                button.update(window)
+                
+            #info about your chips
+            
+            if(len(Player1.Casinochips)!=0):
+                
+                y= 0
+                for amount1 in Player1.Casinochips.values():
+                    
+                    fundsFont = pygame.font.Font.render(get_font(9), amount1.display2(), 1, (255,255,255), (0,0,0))
+                    window.blit(fundsFont, (1070,250+y))
+                    y+=30
+            
+            pygame.display.update()
+            
+            
+        
+        
+    def GetFirstData():
+        
+        
+        manager = pygame_gui.UIManager((1280, 720))
+        PlayerName = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((432, 288), (500, 50))
+                                                            , manager=manager,object_id='#get_name')
+        
+        name = ""
+        bet = ""
+        
+        Player1 = PlayerRoulette("",500)
+        
+        while True:
+            MENU_MOUSE_POS = pygame.mouse.get_pos()
+            UI_REFRESH_RATE = clock.tick(60)/1000
+            window.fill((0,0,0))
+            window.blit(background_image, (0, 0))
+            
+            #BOTON
+            ENTER_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(620, 654), 
+                                text_input="SEND", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+            
+            #BOTON COMPRAR 
+            BUY_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(620, 450), 
+                                text_input="BUY", font=get_font(20), base_color="#d7fcd4", hovering_color="White")
+            
+        
+            
+            
+            #TEXTOS
+            
+            CHOOSE_TEXT = get_font(45).render("Make your bets", True, "White")
+            CHOOSE_RECT = CHOOSE_TEXT.get_rect(center=(640, 200))
+            
+            BLACKJACK_TEXT = get_font(45).render("¡Welcome to the roulette!", True, "White")
+            BLACKJACK_RECT = BLACKJACK_TEXT.get_rect(center=(640, 100))
+            
+            PLAYERNAME_TEXT = get_font(15).render("Player name:", True, "White")
+            PLAYERNAME_RECT = CHOOSE_TEXT.get_rect(center=(555, 325))
+            
+            BET_TEXT = get_font(20).render("Buy your Casino chips here!!", True, "White")
+            BET_RECT = CHOOSE_TEXT.get_rect(center=(555, 420))
+            
+            
+            # Cargar la imagen
+            casinoMan = pygame.image.load("Graphics/CasinoMan.png").convert_alpha()
+            casinoMan2 = pygame.image.load("Graphics/CasinoMan2.png").convert_alpha()
+            
+            window.blit(BET_TEXT,BET_RECT)
+            window.blit(BLACKJACK_TEXT, BLACKJACK_RECT)
+            window.blit(PLAYERNAME_TEXT,PLAYERNAME_RECT)
+            window.blit(CHOOSE_TEXT,CHOOSE_RECT)
+            
+            
+            #variables a usar
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if (event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and
+                    event.ui_object_id == '#get_name'):
+                    name = event.text
+                    Player1.name= name
+                    print(name)
+                    
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if ENTER_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        if(Player1.name!="" and len(Player1.Casinochips)!=0):
+                            Player1.display_chips()
+                            PlayRoulette(Player1)
+                            
+                    if BUY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        playClick()
+                        BuyYourChips(Player1)
+                
+            
+                manager.process_events(event)
+            manager.update(UI_REFRESH_RATE)
+            manager.draw_ui(window)
+            
+            
+            for button in [ENTER_BUTTON,BUY_BUTTON]:
+                button.changeColor(MENU_MOUSE_POS)
+                button.update(window)
+                
+            
+                
+                
+                        
+            # Dibujar la imagen en la pantalla
+            window.blit(casinoMan, (10, 210))
+            window.blit(casinoMan2, (1050, 210))
+            pygame.display.update()
+ 
+    GetFirstData()
+        
 
 def FullGameBlackjack():
     #Primera pantalla cuando se incial el juego
@@ -124,6 +497,7 @@ def FullGameBlackjack():
 
             BLACKJACK_TEXT = get_font(45).render("¡Welcome to blackjack!", True, "White")
             BLACKJACK_RECT = BLACKJACK_TEXT.get_rect(center=(640, 100))
+            
             
             
             window.blit(BLACKJACK_TEXT, BLACKJACK_RECT)

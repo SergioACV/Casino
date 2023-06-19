@@ -1,2 +1,2 @@
-print("ROUNDEND ",roundEnd)
-                        print("CLICK ",click)
+pygame.quit()
+                    sys.exit()
