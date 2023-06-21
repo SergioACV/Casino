@@ -18,6 +18,18 @@ import ctypes, pygame, sys
 from ctypes import windll, wintypes
 from Tragamonedas import Tragamonedas
 
+#loteria
+
+from bingo import Bingo
+
+import pygame
+from moviepy.editor import *
+from pygame.locals import *
+from create_players import create_tables, add_tables
+from class_queue import Queue
+from config import *
+from sets import *
+
 
 
 # Inicializar Pygame
@@ -87,11 +99,13 @@ def main_menu():
         #botones para inciar los juegos
         
         BLACKJACK_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 250), 
-                            text_input="BLACKJACK", font=get_font(60), base_color="#d7fcd4", hovering_color="White")
-        POKER_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 400), 
-                            text_input="TRAGAMONEDAS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        ROULLETTE_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 550), 
-                            text_input="ROULLETTE", font=get_font(60), base_color="#d7fcd4", hovering_color="White")
+                            text_input="BLACKJACK", font=get_font(40), base_color="#d7fcd4", hovering_color="White")
+        TRAGAMONEDAS_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 350), 
+                            text_input="TRAGAMONEDAS", font=get_font(35), base_color="#d7fcd4", hovering_color="White")
+        ROULLETTE_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 450), 
+                            text_input="ROULLETTE", font=get_font(40), base_color="#d7fcd4", hovering_color="White")
+        LOTERIA_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 550), 
+                            text_input="LOTERIA", font=get_font(40), base_color="#d7fcd4", hovering_color="White")
         
         
         #display
@@ -106,19 +120,21 @@ def main_menu():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BLACKJACK_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    print("entering blackjack")
                     playClick()
                     FullGameBlackjack()
-                if POKER_BUTTON.checkForInput(MENU_MOUSE_POS):
+                if TRAGAMONEDAS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     playClick()
-                    print("entering tragamonedas")
                     FullTragamonedas()
                 if ROULLETTE_BUTTON.checkForInput(MENU_MOUSE_POS):
                     playClick()
-                    print("enterir roullette")
                     FullRoulette()
+                if LOTERIA_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    playClick()
+                    FullLoteria()
+                    
+                
     
-        for button in [BLACKJACK_BUTTON, POKER_BUTTON, ROULLETTE_BUTTON]:
+        for button in [BLACKJACK_BUTTON, TRAGAMONEDAS_BUTTON, ROULLETTE_BUTTON,LOTERIA_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(window)
 
@@ -126,6 +142,11 @@ def main_menu():
         pygame.display.update()
         # Controlar la velocidad de fotogramas
         clock.tick(60)
+        
+def FullLoteria():
+    x = Bingo()
+    x.main()
+    
         
 def FullTragamonedas():
     ctypes.windll.user32.SetProcessDPIAware()

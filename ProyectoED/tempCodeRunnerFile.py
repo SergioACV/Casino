@@ -1,1 +1,1 @@
-ctypes.windll.user32.SetProcessDPIAware()
+ MENU_MOUSE_POS = pygame.mouse.get_pos()
