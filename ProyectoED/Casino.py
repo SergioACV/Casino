@@ -10,14 +10,25 @@ from Blackjack import Blackjack
 from Roulette import Roulette
 import os
 
+#Tragamonedas
+
+from maquina import Maquina
+from settings import *
+import ctypes, pygame, sys
+from ctypes import windll, wintypes
+from Tragamonedas import Tragamonedas
+
+
+
 # Inicializar Pygame
 pygame.init()
-
+ctypes.windll.user32.SetProcessDPIAware()
 # Configuración de la ventana
+
 window_width = 1280
 window_height = 720
 window = pygame.display.set_mode((window_width, window_height))
-pygame.display.set_caption("Blackjack Game")
+pygame.display.set_caption("Casino Game")
 
 # Fuentes
 font = pygame.font.SysFont(None, 24)
@@ -65,8 +76,9 @@ def playClick():
 def main_menu():
     
     is_running = True
-
+    
     while is_running:
+        
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         window.fill((0,0,0))
         # Dibujar elementos en la ventana
@@ -77,7 +89,7 @@ def main_menu():
         BLACKJACK_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 250), 
                             text_input="BLACKJACK", font=get_font(60), base_color="#d7fcd4", hovering_color="White")
         POKER_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 400), 
-                            text_input="POKER", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+                            text_input="TRAGAMONEDAS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
         ROULLETTE_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 550), 
                             text_input="ROULLETTE", font=get_font(60), base_color="#d7fcd4", hovering_color="White")
         
@@ -90,7 +102,8 @@ def main_menu():
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                is_running = False
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BLACKJACK_BUTTON.checkForInput(MENU_MOUSE_POS):
                     print("entering blackjack")
@@ -98,7 +111,8 @@ def main_menu():
                     FullGameBlackjack()
                 if POKER_BUTTON.checkForInput(MENU_MOUSE_POS):
                     playClick()
-                    print("entering poker")
+                    print("entering tragamonedas")
+                    FullTragamonedas()
                 if ROULLETTE_BUTTON.checkForInput(MENU_MOUSE_POS):
                     playClick()
                     print("enterir roullette")
@@ -112,7 +126,21 @@ def main_menu():
         pygame.display.update()
         # Controlar la velocidad de fotogramas
         clock.tick(60)
+        
+def FullTragamonedas():
+    ctypes.windll.user32.SetProcessDPIAware()
+    tragamonedas = Tragamonedas()
+    Finish = False
+    while True:
+        Finish = tragamonedas.run()
+        if (Finish):
+            
+            #windll.user32.SetThreadDpiAwarenessContext(wintypes.HANDLE(-1))
+            ctypes.windll.shcore.SetProcessDpiAwareness(-1)
+            pygame.display.set_mode((window_width, window_height))
+            break
     
+
 def FullRoulette():
     
     def PlayRoulette(Player):
@@ -397,7 +425,12 @@ def FullRoulette():
         
         Player1 = PlayerRoulette("",500)
         
-        while True:
+        #Botones
+        #BOTON
+        BACK_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 30), 
+                            text_input="BACK", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+        is_running = True
+        while is_running:
             MENU_MOUSE_POS = pygame.mouse.get_pos()
             UI_REFRESH_RATE = clock.tick(60)/1000
             window.fill((0,0,0))
@@ -460,6 +493,9 @@ def FullRoulette():
                     if BUY_BUTTON.checkForInput(MENU_MOUSE_POS):
                         playClick()
                         BuyYourChips(Player1)
+                        
+                    if BACK_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        is_running = False
                 
             
                 manager.process_events(event)
@@ -467,7 +503,7 @@ def FullRoulette():
             manager.draw_ui(window)
             
             
-            for button in [ENTER_BUTTON,BUY_BUTTON]:
+            for button in [ENTER_BUTTON,BUY_BUTTON,BACK_BUTTON]:
                 button.changeColor(MENU_MOUSE_POS)
                 button.update(window)
                 
@@ -484,40 +520,7 @@ def FullRoulette():
         
 
 def FullGameBlackjack():
-    #Primera pantalla cuando se incial el juego
-    #llama las funciones para pedir los datos del jugador e iniciar la partidad
-    def playBlackjack():
-        
-        makeBet = False
-        while True:
-            PLAY_MOUSE_POS = pygame.mouse.get_pos()
-            
-            window.fill((0,0,0))
-            window.blit(background_image, (0, 0))
-
-            BLACKJACK_TEXT = get_font(45).render("¡Welcome to blackjack!", True, "White")
-            BLACKJACK_RECT = BLACKJACK_TEXT.get_rect(center=(640, 100))
-            
-            
-            
-            window.blit(BLACKJACK_TEXT, BLACKJACK_RECT)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-            
-            #logica
-            
-            if not makeBet:
-                print("Making the bets")
-                player = MakingBets()
-                GameBlackjack(player[0],player[1], True)
-            
-                makeBet= True
-
-            pygame.display.update()
-
+    
     #Dibuja la pantalla del blackjack
     def GameBlackjack(name, bet, FirstTime):
         
@@ -718,11 +721,6 @@ def FullGameBlackjack():
         window.blit(WON_TEXT,WON_RECT)
         
         return funds
-        
-            
-            
-            
-        
     
     #Pantalla para hacer la apuesta inicial
     
@@ -736,8 +734,16 @@ def FullGameBlackjack():
         name = ""
         bet = ""
         
-        while True:
+        #BOTON
+        BACK_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 30), 
+                            text_input="BACK", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+        
+        ENTER_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(620, 654), 
+                            text_input="SEND", font=get_font(10), base_color="#d7fcd4", hovering_color="White")
+        is_running = True
+        while is_running:
             
+            MENU_MOUSE_POS = pygame.mouse.get_pos()
             UI_REFRESH_RATE = clock.tick(60)/1000
             window.fill((0,0,0))
             window.blit(background_image, (0, 0))
@@ -777,26 +783,37 @@ def FullGameBlackjack():
                     event.ui_object_id == '#get_bet'):
                     bet = event.text
                     print(bet)
-                
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    
+                    if ENTER_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        if(name !="" and bet != ""):
+                            print("Apuesta inicial realizada")
+                            player = (name,bet)
+                            GameBlackjack(player[0],player[1], True)
+                            playClick()
+                            
+                            
+                    if BACK_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        is_running = False
+                    
             
                 manager.process_events(event)
             manager.update(UI_REFRESH_RATE)
             manager.draw_ui(window)
+            
+            for button in [BACK_BUTTON,ENTER_BUTTON]:
+                button.changeColor(MENU_MOUSE_POS)
+                button.update(window)
                         
             # Dibujar la imagen en la pantalla
             window.blit(casinoMan, (10, 210))
             window.blit(casinoMan2, (1050, 210))
             pygame.display.update()
             
-            if(name !="" and bet != ""):
-                print("Apuesta inicial realizada")
-                playClick()
-                return name,bet
-            
-    
+
     #La logica del juego esta en la clase blackjack
 
-    playBlackjack()
+    MakingBets()
 
 #Iniciar la interfaz
 main_menu()

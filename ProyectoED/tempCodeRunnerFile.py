@@ -1,2 +1,1 @@
-pygame.quit()
-                    sys.exit()
+ctypes.windll.user32.SetProcessDPIAware()
