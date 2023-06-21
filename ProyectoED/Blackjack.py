@@ -44,24 +44,23 @@ class Blackjack:
     def determine_winner(self):
         croupier_value = self.croupier.get_hand_value()
         self.winners = []
-        print("\n-- Game Results --")
         for player in self.players:
             player_value = player.get_hand_value()
 
             if player_value > 21:
-                print(f"{player.name}: Busted!")
+                
                 self.winners.append(False)
             elif croupier_value > 21:
-                print(f"{player.name} wins with a hand value of {player_value}!")
+                
                 self.winners.append(True)
             elif player_value > croupier_value:
-                print(f"{player.name} wins with a hand value of {player_value}!")
+                
                 self.winners.append(True)
             elif player_value < croupier_value:
-                print(f"{player.name} loses with a hand value of {player_value}!")
+                
                 self.winners.append(False)
             else:
-                print(f"{player.name}: It's a tie!")
+                
                 self.winners.append(2)
             
         return self.winners
