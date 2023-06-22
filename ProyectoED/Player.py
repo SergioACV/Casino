@@ -58,7 +58,11 @@ class PlayerRoulette(Player):
         
     #ROULETTE FEATURES
     def add_chips(self, denomination, amount):
+        
+        total = amount*denomination
+        self.funds = self.funds - total
         if denomination in self.Casinochips:
+            
             self.Casinochips[denomination].add_chips(amount)
             
         else:
@@ -67,13 +71,24 @@ class PlayerRoulette(Player):
             self.Casinochips[denomination] = chip
 
     def remove_chips(self, denomination, amount):
+        
         if denomination in self.Casinochips:
-            self.Casinochips[denomination].remove_chips(amount)
             
+            
+            quit = self.Casinochips[denomination].remove_chips(amount)
+            if quit:
+                total = amount*denomination
+                self.funds = self.funds + total
+                
+                
             if self.Casinochips[denomination].amount == 0:
                 del self.Casinochips[denomination]
         else:
             print("No hay fichas de esa denominación.")
+            
+    def ChipInPlayer(self,denomination):
+        
+        return denomination in self.Casinochips
 
     def display_chips(self):
         print("Fichas del jugador:")

@@ -19,8 +19,10 @@ class CasinoChip(pygame.sprite.Sprite):
     def remove_chips(self, amount):
         if self.amount >= amount:
             self.amount -= amount
+            return True
         else:
             print("No hay suficientes fichas de esa denominación.")
+            return False
 
     def display(self):
         print(f"{self.amount} fichas de {self.denomination} denominación")

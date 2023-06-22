@@ -320,16 +320,17 @@ def FullRoulette():
                     
                     print("Compra realizada")
                     Player.add_chips(denomination,amount)
-                    Player.funds = Player.funds - total
+                    
                     print("Total Fund",Player.funds)
                     playClick()
                 else:
                     print("Saldo insuficiente")
             else:
+                
                 print("Devolviendo saldo")
-                total = amount*denomination*-1
+                
                 Player.remove_chips(denomination,amount*-1)
-                Player.funds = Player.funds + total
+                    
                 
             return Player
                 

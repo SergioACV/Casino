@@ -1,1 +1,2 @@
- MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+            PLAYERNAME_RECT = CHOOSE_TEXT.get_rect(center=(555, 325))
