@@ -7,7 +7,7 @@ from Button import Button
 import ctypes, pygame, pymunk, sys, random
 
 ctypes.windll.user32.SetProcessDPIAware()
-class Game:
+class Plinko:
     def __init__(self):
 
         # General Setup
@@ -39,14 +39,15 @@ class Game:
         QUIT_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 150), 
                             text_input="QUIT", font=pygame.font.Font("Font/font.ttf", 10), base_color="#d7fcd4", hovering_color="White")
         while True:
+            # Get the position of the mouse click
+            mouse_pos = pygame.mouse.get_pos()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    # Get the position of the mouse click
-                    mouse_pos = pygame.mouse.get_pos()
+                    
                     
                     if QUIT_BUTTON.checkForInput(mouse_pos):
                         return True
@@ -87,6 +88,4 @@ class Game:
             pygame.display.update()
         
 
-if __name__ == '__main__':
-    game = Game()
-    game.run()
+
