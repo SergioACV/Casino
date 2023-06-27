@@ -1,7 +1,6 @@
 from Multis_Plinko import *
 from Obstacle_Plinko import *
 from Settings_Plinko import *
-from External_Plinko import *
 
 import pygame, pymunk, random
 
