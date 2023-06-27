@@ -1,8 +1,8 @@
 from Multis_Plinko import *
 from Obstacle_Plinko import *
 from Settings_Plinko import *
-from External_Plinko import *
 from Tree_Plinko import *
+from Balls_Plinko import *
 
 import pygame, pymunk
 
@@ -10,7 +10,6 @@ class Board:
     def __init__(self, space):
         self.space = space
         self.display_surface = pygame.display.get_surface()
-        self.creditos = Creditos()
 
         # Obstacles
         self.curr_row_count = 3
@@ -106,7 +105,6 @@ class Board:
     def update(self):
         self.draw_obstacle(printLevelOrder(self.root))
         multi_group.draw(self.display_surface)
-        self.creditos.draw_actual_credits(self.creditos.creditos)
         multi_group.update()
         if len(list(prev_multi_group)) > 0:
             prev_multi_group.update()
@@ -115,3 +113,14 @@ class Board:
             self.display_surface.blit(self.scaled_play_down, (WIDTH//16, HEIGTH//2))
         else:
             self.display_surface.blit(self.scaled_play_up, (WIDTH//16, HEIGTH//2))
+
+class Win:
+    def __init__(self):
+        self.display_surface = pygame.display.get_surface()
+        self.score_font = pygame.font.Font(None, 50)
+    
+    def update(self,x):
+        self.text_score = self.score_font.render(f'Intentos restantes: {x}', True, [255,255,255])
+        self.display_surface.blit(self.text_score, (10,10))
+
+        
