@@ -158,8 +158,17 @@ def main_menu():
         clock.tick(60)
         
 def FullPlinko():
+    print("playing plinko")
     Game = Plinko()
-    Game.run()
+    Finish = False
+    while True:
+        Finish = Game.run()
+        if (Finish):
+            
+            #windll.user32.SetThreadDpiAwarenessContext(wintypes.HANDLE(-1))
+            ctypes.windll.shcore.SetProcessDpiAwareness(-1)
+            pygame.display.set_mode((window_width, window_height))
+            break
         
 def FullLoteria():
     x = Bingo()

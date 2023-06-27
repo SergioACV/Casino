@@ -3,6 +3,7 @@ from Board_Plinko import *
 from Multis_Plinko import *
 from Balls_Plinko import Ball
 from External_Plinko import *
+from Button import Button
 
 import ctypes, pygame, pymunk, sys, random
 
@@ -33,8 +34,14 @@ class Plinko:
         self.start_time = pygame.time.get_ticks()
 
         self.creditos = Creditos()
+        
+        #Boton
+        QUIT_BUTTON = Button(image=pygame.image.load("Graphics/TinyBt.png"), pos=(1150, 150), 
+                            text_input="QUIT", font=pygame.font.Font("Font/font.ttf", 10), base_color="#d7fcd4", hovering_color="White")
 
         while True:
+            
+            mouse_pos = pygame.mouse.get_pos()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -42,7 +49,12 @@ class Plinko:
                 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     # Get the position of the mouse click
-                    mouse_pos = pygame.mouse.get_pos()
+                    
+                    
+                    if QUIT_BUTTON.checkForInput(mouse_pos):
+                        
+                        return True
+                        
 
                     # Check if the mouse click position collides with the image rectangle
                     if self.board.play_rect.collidepoint(mouse_pos):
@@ -64,6 +76,10 @@ class Plinko:
                         self.board.pressing_play = False
 
             self.screen.fill(BACKGROUND_C)
+            
+            for button in [QUIT_BUTTON]:
+                button.changeColor(mouse_pos)
+                button.update(self.screen)
 
             self.delta_time = self.clock.tick(FPS)/1000
 
