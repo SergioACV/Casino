@@ -22,9 +22,7 @@ class Ball(pygame.sprite.Sprite):
         self.space.add(self.body, self.shape)
         self.image = pygame.Surface((BALL_R*2, BALL_R*2), pygame.SRCALPHA)
         self.rect = self.image.get_rect(topleft=(self.body.position.x, self.body.position.y))
-        self.creditos = Creditos()
-        self.new_credits = self.creditos.creditos
-
+        
     def update(self):
         pos_x, pos_y = int(self.body.position.x), int(self.body.position.y)
         self.rect.centerx = pos_x
@@ -48,9 +46,6 @@ class Ball(pygame.sprite.Sprite):
                 multi.hit_sound()
                 multi.animate(multi.color, multi.multi_amt)
                 multi.is_animating = True
-                self.new_credits = self.creditos.update(multi.incress_credits())
-                
-                
 
                 # Display previous multion right side
                 prev_rgb = multi.color
