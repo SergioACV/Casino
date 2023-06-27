@@ -1,6 +1,5 @@
 from typing import Any
 from Settings_Plinko import *
-from External_Plinko import *
 
 import pygame, pygame.gfxdraw
 
