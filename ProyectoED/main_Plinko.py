@@ -7,7 +7,7 @@ from External_Plinko import *
 import ctypes, pygame, pymunk, sys, random
 
 ctypes.windll.user32.SetProcessDPIAware()
-class Game:
+class Plinko:
     def __init__(self):
 
         # General Setup
@@ -73,7 +73,3 @@ class Game:
 
             pygame.display.update()
         
-
-if __name__ == '__main__':
-    game = Game()
-    game.run()

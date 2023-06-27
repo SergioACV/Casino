@@ -5,8 +5,8 @@ FPS = 60
 
 ctypes.windll.user32.SetProcessDPIAware()
 
-WIDTH = 1920
-HEIGTH = 1080
+WIDTH = 1600
+HEIGTH = 1000
 
 BACKGROUND_C = (40, 2, 58)
 MULTI_HEIGTH = int(HEIGTH/19)
@@ -20,7 +20,7 @@ OBSTACLE_P = int(HEIGTH/19)
 OBSTACLE_S = (int((WIDTH/2)-OBSTACLE_P), int((HEIGTH-(HEIGTH*0.9))))
 segmentA_2 = OBSTACLE_S
 
-BALL_R = 16
+BALL_R = 15
 
 multipliers = {
     "1000":0,

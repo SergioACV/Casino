@@ -30,6 +30,14 @@ from class_queue import Queue
 from config import *
 from sets import *
 
+#PLinko
+from Settings_Plinko import *
+from Board_Plinko import *
+from Multis_Plinko import *
+from Balls_Plinko import Ball
+from External_Plinko import *
+from main_Plinko import Plinko
+import ctypes, pygame, pymunk, sys, random
 
 
 # Inicializar Pygame
@@ -98,14 +106,16 @@ def main_menu():
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
         #botones para inciar los juegos
         
-        BLACKJACK_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 250), 
+        BLACKJACK_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 200), 
                             text_input="BLACKJACK", font=get_font(40), base_color="#d7fcd4", hovering_color="White")
-        TRAGAMONEDAS_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 350), 
+        TRAGAMONEDAS_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 300), 
                             text_input="TRAGAMONEDAS", font=get_font(35), base_color="#d7fcd4", hovering_color="White")
-        ROULLETTE_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 450), 
+        ROULLETTE_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 400), 
                             text_input="ROULLETTE", font=get_font(40), base_color="#d7fcd4", hovering_color="White")
-        LOTERIA_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 550), 
+        LOTERIA_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 500), 
                             text_input="LOTERIA", font=get_font(40), base_color="#d7fcd4", hovering_color="White")
+        PLINKO_BUTTON = Button(image=pygame.image.load("Graphics/GamesBG.png"), pos=(640, 600), 
+                            text_input="PLINKO", font=get_font(40), base_color="#d7fcd4", hovering_color="White")
         
         
         #display
@@ -131,10 +141,14 @@ def main_menu():
                 if LOTERIA_BUTTON.checkForInput(MENU_MOUSE_POS):
                     playClick()
                     FullLoteria()
+                if PLINKO_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    playClick()
+                    FullPlinko()
+                    
                     
                 
     
-        for button in [BLACKJACK_BUTTON, TRAGAMONEDAS_BUTTON, ROULLETTE_BUTTON,LOTERIA_BUTTON]:
+        for button in [BLACKJACK_BUTTON, TRAGAMONEDAS_BUTTON, ROULLETTE_BUTTON,LOTERIA_BUTTON,PLINKO_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(window)
 
@@ -142,6 +156,10 @@ def main_menu():
         pygame.display.update()
         # Controlar la velocidad de fotogramas
         clock.tick(60)
+        
+def FullPlinko():
+    Game = Plinko()
+    Game.run()
         
 def FullLoteria():
     x = Bingo()
